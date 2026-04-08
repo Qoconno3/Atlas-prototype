@@ -12,11 +12,16 @@ import {
   ExternalLink, 
   MessageSquare, 
   Zap, 
-  Check 
+  Check,
+  ShieldCheck,
+  Layout,
+  Type,
+  X,
+  Clock
 } from 'lucide-react';
 import './KnowledgeOps.css';
 
-type KnowledgeView = 'triage' | 'copilot' | 'settings';
+type KnowledgeView = 'myWork' | 'copilot' | 'myAudit' | 'auditReview';
 
 interface Ticket {
   id: string;
@@ -26,6 +31,15 @@ interface Ticket {
   category: 'Outdated Info' | 'Missing Step' | 'Confusing Content' | 'Broken Link';
   priority: 'High' | 'Medium' | 'Low';
   time: string;
+}
+
+interface AuditItem {
+  id: string;
+  document: string;
+  flagType: 'Formatting & Accessibility' | 'Clarity & Tone' | 'Stale Content';
+  flagIcon: React.ReactNode;
+  note: string;
+  actionLabel: string;
 }
 
 const TICKETS: Ticket[] = [
@@ -67,13 +81,46 @@ const TICKETS: Ticket[] = [
   }
 ];
 
+const AUDIT_ITEMS: AuditItem[] = [
+  {
+    id: 'A-1',
+    document: 'Checking Account Fee Schedule',
+    flagType: 'Formatting & Accessibility',
+    flagIcon: <Layout size={16} className="flag-warning" />,
+    note: 'Table structure is broken on mobile view; missing standard Truth in Savings Act disclaimer in footer.',
+    actionLabel: '✨ Review Atlas Fix'
+  },
+  {
+    id: 'A-2',
+    document: 'Auto Loan Origination Guidelines',
+    flagType: 'Clarity & Tone',
+    flagIcon: <Type size={16} className="flag-ai" />,
+    note: 'Sections 3 and 4 use heavy passive voice and complex jargon. Reading level is currently post-graduate.',
+    actionLabel: '✨ Review Atlas Fix'
+  },
+  {
+    id: 'A-3',
+    document: 'Business Member Onboarding Checklist',
+    flagType: 'Stale Content',
+    flagIcon: <Clock size={16} className="flag-stale" />,
+    note: 'This document was last reviewed on March 12, 2025 (over 390 days ago). Policy requires annual SME verification.',
+    actionLabel: '✨ Start Review'
+  }
+];
+
 export const KnowledgeOps: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<KnowledgeView>('triage');
+  const [activeTab, setActiveTab] = useState<KnowledgeView>('myWork');
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
 
   const handleTicketClick = (id: string) => {
     setSelectedTicketId(id);
     setActiveTab('copilot');
+  };
+
+  const handleReviewClick = (item: AuditItem) => {
+    if (item.id === 'A-2') {
+      setActiveTab('auditReview');
+    }
   };
 
   const renderSidebar = () => (
@@ -82,34 +129,32 @@ export const KnowledgeOps: React.FC = () => {
         <button className="ops-menu-trigger" onClick={() => (window as any).togglePrototypeMenu()}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
         </button>
-        <div className="ops-logo">
-          <div className="logo-icon">M</div>
-          <span>Knowledge Hub</span>
-        </div>
       </div>
       
       <nav className="ops-nav">
         <button 
-          className={`ops-nav-item ${activeTab === 'triage' ? 'active' : ''}`}
-          onClick={() => setActiveTab('triage')}
+          className={`ops-nav-item ${activeTab === 'myWork' ? 'active' : ''}`}
+          onClick={() => setActiveTab('myWork')}
         >
           <Inbox size={18} />
-          <span>Triage Queue</span>
+          <span>MyWork</span>
           <span className="nav-badge">24</span>
         </button>
-        <div className="nav-spacer-ops"></div>
+        
         <button 
-          className={`ops-nav-item ${activeTab === 'settings' ? 'active' : ''}`}
-          onClick={() => setActiveTab('settings')}
+          className={`ops-nav-item ${activeTab === 'myAudit' ? 'active' : ''}`}
+          onClick={() => setActiveTab('myAudit')}
         >
-          <Settings size={18} />
-          <span>Settings</span>
+          <ShieldCheck size={18} className={activeTab === 'myAudit' ? '' : 'ai-icon'} />
+          <span>MyAudit</span>
         </button>
+
+        <div className="nav-spacer-ops"></div>
       </nav>
     </aside>
   );
 
-  const renderTriage = () => (
+  const renderMyWork = () => (
     <div className="ops-view">
       <header className="view-header">
         <div>
@@ -192,6 +237,68 @@ export const KnowledgeOps: React.FC = () => {
     </div>
   );
 
+  const renderMyAudit = () => (
+    <div className="ops-view">
+      <header className="view-header">
+        <div>
+          <h1>Proactive Content Audit</h1>
+          <p className="subtitle">Continuous monitoring for clarity, formatting, and compliance.</p>
+        </div>
+        <div className="header-actions">
+          <button className="filter-btn">
+            <Filter size={16} />
+            <span>All Owned Content</span>
+          </button>
+        </div>
+      </header>
+
+      <div className="metrics-grid">
+        <div className="metric-card">
+          <div className="metric-label">Pages Monitored (Your Queue)</div>
+          <div className="metric-value">42</div>
+          <div className="metric-trend success">Active Coverage</div>
+        </div>
+        <div className="metric-card">
+          <div className="metric-label">Readability Score Avg.</div>
+          <div className="metric-value">Grade 12</div>
+          <div className="metric-trend danger">Needs Improvement</div>
+        </div>
+        <div className="metric-card">
+          <div className="metric-label">Active QA Flags</div>
+          <div className="metric-value">5</div>
+          <div className="metric-trend up">+2 since yesterday</div>
+        </div>
+      </div>
+
+      <div className="audit-list-container">
+        <div className="audit-list-header">Your Owned Content Flags</div>
+        <div className="audit-items">
+          {AUDIT_ITEMS.map(item => (
+            <div key={item.id} className="audit-card">
+              <div className="audit-card-main">
+                <div className="audit-doc-info">
+                  <div className="audit-doc-name">{item.document}</div>
+                  <div className="audit-flag-tag">
+                    {item.flagIcon}
+                    <span>{item.flagType}</span>
+                  </div>
+                </div>
+                <div className="audit-note">
+                  <strong>Atlas Note:</strong> {item.note}
+                </div>
+              </div>
+              <div className="audit-card-actions">
+                <button className="audit-review-btn" onClick={() => handleReviewClick(item)}>
+                  {item.actionLabel}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
   const renderCoPilot = () => {
     const isProposedFix = selectedTicketId === 'T-1082';
     const isConfusingContent = selectedTicketId === 'T-1080';
@@ -202,7 +309,7 @@ export const KnowledgeOps: React.FC = () => {
       <div className="ops-view">
         <header className="view-header split-header">
           <div className="header-left-ops">
-            <button className="back-btn" onClick={() => setActiveTab('triage')}>
+            <button className="back-btn" onClick={() => setActiveTab('myWork')}>
               <ArrowLeft size={18} />
             </button>
             <div>
@@ -211,7 +318,7 @@ export const KnowledgeOps: React.FC = () => {
             </div>
           </div>
           <div className="header-actions">
-            <button className="secondary-btn" onClick={() => setActiveTab('triage')}>Cancel</button>
+            <button className="secondary-btn" onClick={() => setActiveTab('myWork')}>Cancel</button>
             <button className="primary-btn">
               <Check size={18} />
               <span>{isProposedFix || isConfusingContent ? 'Approve & Publish' : 'Save Changes'}</span>
@@ -340,18 +447,67 @@ export const KnowledgeOps: React.FC = () => {
     );
   };
 
+  const renderAuditReview = () => {
+    return (
+      <div className="ops-view">
+        <header className="view-header split-header">
+          <div className="header-left-ops">
+            <button className="back-btn" onClick={() => setActiveTab('myAudit')}>
+              <ArrowLeft size={18} />
+            </button>
+            <div>
+              <h1>Atlas Content Review</h1>
+              <p className="subtitle">Auto Loan Origination Guidelines • Clarity & Tone Update</p>
+            </div>
+          </div>
+          <div className="header-actions">
+            <button className="secondary-btn" onClick={() => setActiveTab('myAudit')}>Reject Suggestion</button>
+            <button className="primary-btn ai-action" onClick={() => setActiveTab('myAudit')}>
+              <Check size={18} />
+              <span>Approve & Update Page</span>
+            </button>
+          </div>
+        </header>
+
+        <div className="review-ai-banner">
+          <Sparkles size={16} />
+          <span>✨ Atlas applied the 'Frontline Clarity' guideline. Passive voice removed and steps converted to bullets.</span>
+        </div>
+
+        <div className="review-comparison-grid standalone">
+          <div className="comparison-side left">
+            <div className="side-label">Current State</div>
+            <div className="comparison-content dense-text">
+              <p>
+                In order for the application for an auto loan to be successfully processed by the lending department, it is required that all documentation, which includes but is not limited to proof of income, a valid government-issued photo identification, and the most recent two years of federal tax returns, be submitted in their entirety by the applicant. Furthermore, it should be noted that the credit report will be pulled by our automated system upon receipt of the aforementioned documents to determine the interest rate that will be applied to the loan.
+              </p>
+            </div>
+          </div>
+          <div className="comparison-side right">
+            <div className="side-label">Atlas Recommendation</div>
+            <div className="comparison-content">
+              <p>To process your auto loan application, please submit the following documents:</p>
+              <ul className="atlas-bullets">
+                <li>Proof of income</li>
+                <li>Valid government-issued photo ID</li>
+                <li>Last two years of federal tax returns</li>
+              </ul>
+              <p>Once received, our system will automatically pull your credit report to determine your interest rate.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="knowledge-ops-container">
       {renderSidebar()}
       <main className="ops-main">
-        {activeTab === 'triage' && renderTriage()}
+        {activeTab === 'myWork' && renderMyWork()}
+        {activeTab === 'myAudit' && renderMyAudit()}
         {activeTab === 'copilot' && renderCoPilot()}
-        {activeTab === 'settings' && (
-          <div className="ops-view">
-            <h1>Settings</h1>
-            <p className="subtitle">Manage AI models and routing rules</p>
-          </div>
-        )}
+        {activeTab === 'auditReview' && renderAuditReview()}
       </main>
     </div>
   );
