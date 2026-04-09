@@ -458,6 +458,33 @@ body, html {
   padding: 0 20px 20px 20px;
 }
 
+.upload-status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background-color: #f0f7ff;
+  border: 1px solid #b3d7ff;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #0066cc;
+  margin-bottom: 8px;
+}
+
+.upload-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid #0066cc;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 .chat-input-area {
   border: 1px solid var(--teams-border);
   border-radius: 4px;

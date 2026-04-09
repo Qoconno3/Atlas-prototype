@@ -52,6 +52,7 @@ function App() {
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [searchStatus, setSearchStatus] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -134,6 +135,7 @@ function App() {
     if (id === 1) text = "I have a member with a complex commercial loan escalation, who do I transfer them to?";
     else if (id === 2) text = "I have a weird case where a member claims their account was locked because their notary seal on a power of attorney was rejected, but they say the notary is a mobile service.";
     else if (id === 3) text = "tell me about Bryan Rhodes team";
+    else if (id === 4) text = "can you review this power of attorney document";
     
     const userMessage: Message = { id: Date.now().toString(), text, sender: 'user', timestamp: new Date() };
     setMessages((prev) => [...prev, userMessage]);
@@ -144,6 +146,60 @@ function App() {
       simulateBotResponse("This sounds like a nuanced verification issue. Based on those specific details, I recommend routing to the **Fraud and Verification Special Operations Team**. While the general Fraud line is ext. 500, they handle mobile notary discrepancies directly. The available analyst for POA verification is **Marcus Thompson**. His transfer code is ***582**.", true);
     } else if (id === 3) {
       simulateBotResponse("Bryan Rhodes manages the following Product Management team:\n\n• **Quincy O'Connor**, Senior PM\n• **Jessica Alba**, Senior PM\n• **Jeff White**, PM Manager\n• **Ben Macey**, Director of PM", true);
+    } else if (id === 4) {
+      setTimeout(() => {
+        setIsTyping(true);
+        setTimeout(() => {
+          const botMessage: Message = {
+            id: (Date.now() + 1).toString(),
+            text: "Yes, I can certainly help with that. Please upload the document you'd like me to review.",
+            sender: 'bot',
+            timestamp: new Date(),
+            source: 'kb'
+          };
+          setMessages((prev) => [...prev, botMessage]);
+          setIsTyping(false);
+
+          // Simulate user "uploading" after a short pause
+          setTimeout(() => {
+            setIsUploading(true);
+            setTimeout(() => {
+              setIsUploading(false);
+              const uploadMsg: Message = {
+                id: (Date.now() + 2).toString(),
+                text: "📄 Jenkins_POA_Draft.pdf",
+                sender: 'user',
+                timestamp: new Date(),
+              };
+              setMessages((prev) => [...prev, uploadMsg]);
+
+              // Now Atlas reviews with longer latency
+              setTimeout(() => {
+                setIsTyping(true);
+                setSearchStatus("Analyzing document structure...");
+                setTimeout(() => {
+                  setSearchStatus("Verifying notary acknowledgment...");
+                  setTimeout(() => {
+                    setSearchStatus("Checking for signature completeness...");
+                    setTimeout(() => {
+                      const finalResponse: Message = {
+                        id: (Date.now() + 3).toString(),
+                        text: "I have reviewed the Power of Attorney document for **Sarah Jenkins**. The document appears to be correctly executed, including the required notary acknowledgment and signatures. You are clear to proceed with the account update.",
+                        sender: 'bot',
+                        timestamp: new Date(),
+                        source: 'kb'
+                      };
+                      setMessages((prev) => [...prev, finalResponse]);
+                      setIsTyping(false);
+                      setSearchStatus(null);
+                    }, 4000);
+                  }, 3000);
+                }, 3000);
+              }, 1500);
+            }, 3000);
+          }, 2000);
+        }, 1500);
+      }, 1000);
     }
   };
 
@@ -231,7 +287,14 @@ function App() {
                   <button onClick={() => runChatScenario(1)}>Commercial Loan</button>
                   <button onClick={() => runChatScenario(2)}>Verification</button>
                   <button onClick={() => runChatScenario(3)}>Who Am I?</button>
+                  <button onClick={() => runChatScenario(4)}>Review POA</button>
                 </div>
+                {isUploading && (
+                  <div className="upload-status-indicator">
+                    <div className="upload-spinner"></div>
+                    Uploading Jenkins_POA_Draft.pdf...
+                  </div>
+                )}
                 <form className="chat-input-area" onSubmit={handleSend}>
                   <textarea
                     className="chat-input"
