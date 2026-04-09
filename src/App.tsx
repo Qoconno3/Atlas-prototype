@@ -3,6 +3,7 @@ import './App.css';
 import type { Message } from './types';
 import { BANKING_RESPONSES } from './responses';
 import { KnowledgeOps } from './KnowledgeOps';
+import { DynamicsCRM } from './DynamicsCRM';
 
 // In Vite, files in public/ can be accessed by absolute paths from the root
 const atlasLogo = import.meta.env.BASE_URL + "ai-logo.png"; 
@@ -15,14 +16,6 @@ const INITIAL_MESSAGES: Message[] = [
     timestamp: new Date(),
     source: 'kb'
   },
-];
-
-const RECENT_CHATS = [
-  { id: 'atlas', name: 'Atlas', lastMsg: 'I\'m Atlas, your internal AI resource...', time: '10:45 AM', active: true, isBot: true },
-  { id: '1', name: 'HR Benefits', lastMsg: 'The open enrollment period starts...', time: 'Yesterday', active: false },
-  { id: '2', name: 'Mortgage Team', lastMsg: 'Sarah: Updated the rates for...', time: 'Monday', active: false },
-  { id: '3', name: 'IT Support', lastMsg: 'Your ticket has been resolved...', time: 'Friday', active: false },
-  { id: '4', name: 'General Branch Chat', lastMsg: 'Lunch is here!', time: '12:02 PM', active: false },
 ];
 
 const FormattedText = ({ text }: { text: string }) => {
@@ -43,7 +36,7 @@ const FormattedText = ({ text }: { text: string }) => {
   );
 };
 
-type ViewId = 'chat' | 'ops';
+type ViewId = 'chat' | 'ops' | 'dynamics';
 
 function App() {
   const [currentView, setCurrentView] = useState<ViewId>('chat');
@@ -265,6 +258,8 @@ function App() {
         );
       case 'ops':
         return <KnowledgeOps />;
+      case 'dynamics':
+        return <DynamicsCRM />;
     }
   };
 
@@ -276,6 +271,9 @@ function App() {
       </div>
       <div className={`menu-item ${currentView === 'ops' ? 'active' : ''}`} onClick={() => { setCurrentView('ops'); setIsMenuOpen(false); }}>
         Atlas Knowledge Hub
+      </div>
+      <div className={`menu-item ${currentView === 'dynamics' ? 'active' : ''}`} onClick={() => { setCurrentView('dynamics'); setIsMenuOpen(false); }}>
+        CRM
       </div>
     </div>
   );

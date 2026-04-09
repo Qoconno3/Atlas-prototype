@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { 
   Inbox, 
   Sparkles, 
-  Settings, 
   AlertCircle, 
   ChevronRight, 
   Search, 
@@ -16,7 +15,6 @@ import {
   ShieldCheck,
   Layout,
   Type,
-  X,
   Clock
 } from 'lucide-react';
 import './KnowledgeOps.css';
