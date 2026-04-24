@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Sparkles } from 'lucide-react';
 import './App.css';
 import type { Message } from './types';
 import { BANKING_RESPONSES } from './responses';
