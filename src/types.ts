@@ -8,7 +8,7 @@ export interface Message {
   isSearching?: boolean;
   searchStatus?: string;
   citations?: string[];
-  source?: 'kb' | 'atlas-connect';
+  source?: 'kb' | 'operator';
 }
 
 export interface BotResponse {

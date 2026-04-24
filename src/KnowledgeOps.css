@@ -941,21 +941,20 @@
   border-bottom-right-radius: 2px;
 }
 
-.bot .chat-bubble, 
-.atlas-connect .chat-bubble {
+.bot .chat-bubble,
+.operator .chat-bubble {
   background-color: #f3f2f1;
   color: var(--ops-text-main);
   border-bottom-left-radius: 2px;
   border: 1px solid var(--ops-border);
 }
 
-.atlas-connect .chat-bubble {
+.operator .chat-bubble {
   background-color: #ffffff;
   border: 2px solid var(--macu-red);
   box-shadow: 0 4px 12px rgba(166, 25, 46, 0.1);
 }
-
-.connect-badge {
+.operator-badge {
   display: flex;
   align-items: center;
   gap: 6px;

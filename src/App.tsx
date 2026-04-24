@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Sparkles } from 'lucide-react';
 import './App.css';
 import type { Message } from './types';
 import { BANKING_RESPONSES } from './responses';
@@ -11,7 +12,7 @@ const atlasLogo = import.meta.env.BASE_URL + "ai-logo.png";
 const INITIAL_MESSAGES: Message[] = [
   {
     id: '1',
-    text: "I'm Atlas, your internal AI resource for Mountain America. I'm here to help you assist members with processes, products, and guidelines. How can I help you today?",
+    text: "I'm **Atlas**, your internal AI resource for Mountain America.\n\nI'm here to help you assist members with processes, products, and guidelines. How can I help you today?",
     sender: 'bot',
     timestamp: new Date(),
     source: 'kb'
@@ -19,18 +20,31 @@ const INITIAL_MESSAGES: Message[] = [
 ];
 
 const FormattedText = ({ text }: { text: string }) => {
-  // Simple markdown-ish formatter for bold and italics
-  const parts = text.split(/(\*\*.*?\*\*|\*.*?\*)/g);
+  const lines = text.split('\n');
+  
   return (
     <div className="message-text">
-      {parts.map((part, i) => {
-        if (part.startsWith('**') && part.endsWith('**')) {
-          return <strong key={i}>{part.slice(2, -2)}</strong>;
-        }
-        if (part.startsWith('*') && part.endsWith('*')) {
-          return <em key={i}>{part.slice(1, -1)}</em>;
-        }
-        return part;
+      {lines.map((line, i) => {
+        if (line.trim() === '') return <div key={i} className="text-line-spacer" />;
+        
+        const isBullet = line.trim().startsWith('•') || line.trim().startsWith('-');
+        const isNumbered = /^\d+[\)\.]/.test(line.trim());
+        
+        const content = line.split(/(\*\*.*?\*\*|\*.*?\*)/g).map((part, j) => {
+          if (part.startsWith('**') && part.endsWith('**')) {
+            return <strong key={j}>{part.slice(2, -2)}</strong>;
+          }
+          if (part.startsWith('*') && part.endsWith('*')) {
+            return <em key={i + '-' + j}>{part.slice(1, -1)}</em>;
+          }
+          return part;
+        });
+
+        return (
+          <div key={i} className={`text-line ${isBullet ? 'bullet-line' : ''} ${isNumbered ? 'numbered-line' : ''}`}>
+            {content}
+          </div>
+        );
       })}
     </div>
   );
@@ -82,20 +96,20 @@ function App() {
     simulateBotResponse();
   };
 
-  const simulateBotResponse = (customText?: string, isConnect?: boolean) => {
+  const simulateBotResponse = (customText?: string, isOperator?: boolean) => {
     setTimeout(() => {
       setIsTyping(true);
       setTimeout(() => {
         setSearchStatus("Searching Knowledge Base...");
         setTimeout(() => {
-          if (isConnect) {
-            setSearchStatus("✨ Routing to Atlas Connect...");
+          if (isOperator) {
+            setSearchStatus("✨ Routing to Operator...");
           } else {
             setSearchStatus("Accessing SharePoint documents...");
           }
           
           setTimeout(() => {
-            if (!isConnect) setSearchStatus("Synthesizing internal guidelines...");
+            if (!isOperator) setSearchStatus("Synthesizing internal guidelines...");
             
             setTimeout(() => {
               let botMessage: Message;
@@ -106,7 +120,7 @@ function App() {
                   text: customText,
                   sender: 'bot',
                   timestamp: new Date(),
-                  source: isConnect ? 'atlas-connect' : 'kb'
+                  source: isOperator ? 'operator' : 'kb'
                 };
               } else {
                 const randomResponse = BANKING_RESPONSES[Math.floor(Math.random() * BANKING_RESPONSES.length)];
@@ -123,7 +137,7 @@ function App() {
               setMessages((prev) => [...prev, botMessage]);
               setIsTyping(false);
               setSearchStatus(null);
-            }, isConnect ? 3500 : 3000);
+            }, isOperator ? 3500 : 3000);
           }, 2500);
         }, 2000);
       }, 1500);
@@ -141,9 +155,9 @@ function App() {
     setMessages((prev) => [...prev, userMessage]);
     
     if (id === 1) {
-      simulateBotResponse("For complex commercial loan escalations, you should contact the Commercial Underwriting Lead. The current Lead on rotation is **Sarah Chen**. Her direct transfer code is ***123** and her status is **🟢 Available (On-Shift)**.", true);
+      simulateBotResponse("For complex commercial loan escalations, you should contact the Commercial Underwriting Lead:\n\n• **Lead on rotation**: Sarah Chen\n• **Transfer Code**: *123\n• **Status**: 🟢 Available (On-Shift)", true);
     } else if (id === 2) {
-      simulateBotResponse("This sounds like a nuanced verification issue. Based on those specific details, I recommend routing to the **Fraud and Verification Special Operations Team**. While the general Fraud line is ext. 500, they handle mobile notary discrepancies directly. The available analyst for POA verification is **Marcus Thompson**. His transfer code is ***582**.", true);
+      simulateBotResponse("This sounds like a nuanced verification issue. Based on those specific details, I recommend routing to the **Fraud and Verification Special Operations Team**.\n\nWhile the general Fraud line is ext. 500, they handle mobile notary discrepancies directly.\n\n• **Available Analyst**: Marcus Thompson\n• **Transfer Code**: *582", true);
     } else if (id === 3) {
       simulateBotResponse("Bryan Rhodes manages the following Product Management team:\n\n• **Quincy O'Connor**, Senior PM\n• **Jessica Alba**, Senior PM\n• **Jeff White**, PM Manager\n• **Ben Macey**, Director of PM", true);
     } else if (id === 4) {

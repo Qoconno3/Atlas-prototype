@@ -433,6 +433,24 @@ body, html {
   white-space: pre-wrap;
 }
 
+.text-line {
+  margin-bottom: 2px;
+}
+
+.text-line-spacer {
+  height: 8px;
+}
+
+.bullet-line {
+  padding-left: 14px;
+  margin-top: 4px;
+}
+
+.numbered-line {
+  padding-left: 0px;
+  margin-top: 4px;
+}
+
 .citations-container {
   margin-top: 12px;
   padding-top: 8px;
@@ -522,13 +540,13 @@ body, html {
   color: #c8c8c8;
 }
 
-.msg-bubble.atlas-connect-bubble {
+.msg-bubble.operator-bubble {
   background-color: #ffffff;
   border: 2px solid var(--macu-red);
   box-shadow: 0 4px 12px rgba(166, 25, 46, 0.1);
 }
 
-.connect-badge-chat {
+.operator-badge-chat {
   display: flex;
   align-items: center;
   gap: 6px;
