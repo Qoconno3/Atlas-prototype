@@ -26,7 +26,7 @@ interface Ticket {
   user: string;
   role: string;
   feedback: string;
-  category: 'Outdated Info' | 'Missing Step' | 'Confusing Content' | 'Broken Link';
+  category: 'Outdated Info' | 'Missing Step' | 'Confusing Content' | 'Broken Link' | 'Product Update';
   priority: 'High' | 'Medium' | 'Low';
   time: string;
 }
@@ -41,6 +41,15 @@ interface AuditItem {
 }
 
 const TICKETS: Ticket[] = [
+  {
+    id: 'T-1083',
+    user: 'Quincy O\'Connor',
+    role: 'Product Manager',
+    feedback: "The 'Operator' routing feature is now live. Update the Internal Routing Procedures to reflect that Atlas can now direct complex escalations to the correct lead via the Operator function.",
+    category: 'Product Update',
+    priority: 'High',
+    time: '2m ago'
+  },
   {
     id: 'T-1082',
     user: 'Sarah Jenkins',
@@ -298,6 +307,7 @@ export const KnowledgeOps: React.FC = () => {
   );
 
   const renderCoPilot = () => {
+    const isProductUpdate = selectedTicketId === 'T-1083';
     const isProposedFix = selectedTicketId === 'T-1082';
     const isConfusingContent = selectedTicketId === 'T-1080';
     const isBrokenLink = selectedTicketId === 'T-1081';
@@ -319,7 +329,7 @@ export const KnowledgeOps: React.FC = () => {
             <button className="secondary-btn" onClick={() => setActiveTab('myWork')}>Cancel</button>
             <button className="primary-btn">
               <Check size={18} />
-              <span>{isProposedFix || isConfusingContent ? 'Approve & Publish' : 'Save Changes'}</span>
+              <span>{isProposedFix || isConfusingContent || isProductUpdate ? 'Approve & Publish' : 'Save Changes'}</span>
             </button>
           </div>
         </header>
@@ -330,6 +340,9 @@ export const KnowledgeOps: React.FC = () => {
               <h3><MessageSquare size={16} /> Conversation Context</h3>
               <div className="section-content">
                 <div className="chat-snippet">
+                  {isProductUpdate && (
+                    <div className="chat-msg user"><p><strong>System Note:</strong> Release v2.4.0 deployed. Feature "Operator Routing" is now available in production.</p></div>
+                  )}
                   {isProposedFix && (
                     <>
                       <div className="chat-msg user"><p><strong>Member:</strong> What are the domestic wire limits for standard personal accounts?</p></div>
@@ -381,6 +394,7 @@ export const KnowledgeOps: React.FC = () => {
               <h3><Zap size={16} /> AI Rationale</h3>
               <div className="section-content">
                 <p className="rationale-text">
+                  {isProductUpdate && "Atlas detected a new deployment (v2.4.0) that includes 'Operator Routing'. The current 'Internal Routing Procedures' document has not been updated since v2.3.1."}
                   {isProposedFix && "Atlas detected a conflict between the knowledge base and the 'Policy Update: Wire Transfers Oct 2026' document found in SharePoint."}
                   {isBrokenLink && "Atlas verified that the target URL (macu.org/apply/auto-loan-old) returns a 404 error. No direct replacement was found in recent indexed policy updates."}
                   {isConfusingContent && "Atlas analyzed 24 recent chat sessions. Members expressed 'frustration' or 'confusion' regarding fee frequency in 85% of these interactions."}
@@ -393,6 +407,7 @@ export const KnowledgeOps: React.FC = () => {
             <div className={`ai-banner ${isBrokenLink ? 'warning' : isConfusingContent ? 'info' : ''}`}>
               <Sparkles size={18} />
               <span>
+                {isProductUpdate && "Atlas has drafted an update to the Internal Routing Procedures based on the new release notes."}
                 {isProposedFix && "Atlas has proposed a draft based on recent policy release notes."}
                 {isBrokenLink && "Atlas has identified the problematic section but requires your expertise to provide the update."}
                 {isConfusingContent && "Atlas has proposed a readability improvement to clarify fee frequency."}
@@ -400,17 +415,27 @@ export const KnowledgeOps: React.FC = () => {
             </div>
             <div className="rich-editor">
               <div className="editor-toolbar">
-                <span className="doc-title">Article: {isProposedFix ? 'Wire Transfer Guidelines' : isBrokenLink ? 'Auto Loan Process' : 'New Account Disclosures'}</span>
+                <span className="doc-title">Article: {isProductUpdate ? 'Internal Routing Procedures' : isProposedFix ? 'Wire Transfer Guidelines' : isBrokenLink ? 'Auto Loan Process' : 'New Account Disclosures'}</span>
                 <div className="toolbar-icons"><FileEdit size={16} /><ExternalLink size={16} /></div>
               </div>
               <div className="editor-content">
-                <h2>{isProposedFix ? 'Wire Transfer Limitations' : isBrokenLink ? 'Auto Loan Origination' : 'Maintenance Fee Schedule'}</h2>
+                <h2>{isProductUpdate ? 'Escalations and Internal Routing' : isProposedFix ? 'Wire Transfer Limitations' : isBrokenLink ? 'Auto Loan Origination' : 'Maintenance Fee Schedule'}</h2>
                 <p>
-                  {isProposedFix ? "Mountains America Credit Union enforces daily limits on wire transfers for security purposes. These limits vary by account type." : 
+                  {isProductUpdate ? "Mountain America Credit Union utilizes a structured escalation path for complex member inquiries. These paths are designed to ensure speed and accuracy." :
+                   isProposedFix ? "Mountains America Credit Union enforces daily limits on wire transfers for security purposes. These limits vary by account type." : 
                    isBrokenLink ? "To begin your application, ensure you have your member ID and secondary form of identification ready." :
                    "The following fees are associated with the standard personal checking and savings accounts."}
                 </p>
                 
+                {isProductUpdate && (
+                  <div className="diff-view">
+                    <div className="diff-added">
+                      <strong>New: Operator Routing Function</strong><br/>
+                      As of v2.4.0, Atlas can now facilitate direct escalations. When a member inquiry requires a specialized lead (e.g., Commercial Underwriting, Fraud Verification), Atlas will offer to route the request through the "Operator" function. This ensures the correct subject matter expert is reached without manual directory searches.
+                    </div>
+                  </div>
+                )}
+
                 {isProposedFix && (
                   <div className="diff-view">
                     <div className="diff-removed">Domestic wire limits for standard personal accounts are $10,000 per business day.</div>

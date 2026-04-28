@@ -618,6 +618,7 @@
   background-color: #f3f2f1;
 }
 
+.category-product-update { background: #d0f0fd; color: #005a9e; }
 .category-outdated-info { background: #fde7e9; color: #a4262c; }
 .category-broken-link { background: #fff4ce; color: #9a3412; }
 .category-confusing-content { background: #fff4ce; color: #854d0e; }
